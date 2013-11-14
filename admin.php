@@ -60,13 +60,20 @@ if (isset($_POST['saveevents'])) {
 
 			<div class="tab-content">
 				<div class="tab-pane active" id="facebook-setup">
-					<div class="form-group">
-						<label for="url">Facebook Birthdays URL*</label> 
-						<input type="url" name="url" id="url" value="<?php echo $url; ?>" class="form-control" />
-						<p class="help-block">
-							* See <a href="https://www.facebook.com/help/206619532710687" target="_blank">instructions</a> on Facebook Help.
-						</p>
-					</div>	
+
+					<div class="panel panel-default">
+						<div class="panel-heading">Facebook Settings</div>
+						<div class="panel-body">
+
+							<div class="form-group">
+								<label for="url">Facebook Birthdays URL</label> 
+								<input type="url" name="url" id="url" value="<?php echo $url; ?>" class="form-control" />
+								<p class="help-block">
+									See <a href="https://www.facebook.com/help/206619532710687" target="_blank">instructions</a> on Facebook Help.
+								</p>
+							</div>	
+						</div>
+					</div>
 				</div>
 				<div class="tab-pane" id="exclude-friends">
 					<?php
@@ -111,7 +118,8 @@ if (isset($_POST['saveevents'])) {
 							<thead>
 								<tr>
 									<th>Name</th>
-									<th>Month/ Day</th>
+									<th>Month</th>
+									<th>Day</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -119,7 +127,7 @@ if (isset($_POST['saveevents'])) {
 								<tr>
 									<td><input type="text" name="include[][name]" class="form-control" placeholder="Name" /></td>
 									<td>
-										<div class="input-group">
+										
 											<select name="include[][month]" class="form-control bmonth">
 												<option></option>
 												<option value="1">January</option>
@@ -134,85 +142,88 @@ if (isset($_POST['saveevents'])) {
 												<option value="10">October</option>
 												<option value="11">November</option>
 												<option value="12">December</option>
-											</select> <select name="include[][day]" class="form-control bday">
-												<option></option>
-												<option value="1">1</option>
-												<option value="2">2</option>
-												<option value="3">3</option>
-												<option value="4">4</option>
-												<option value="5">5</option>
-												<option value="6">6</option>
-												<option value="7">7</option>
-												<option value="8">8</option>
-												<option value="9">9</option>
-												<option value="10">10</option>
-												<option value="11">11</option>
-												<option value="12">12</option>
-												<option value="13">13</option>
-												<option value="14">14</option>
-												<option value="15">15</option>
-												<option value="16">16</option>
-												<option value="17">17</option>
-												<option value="18">18</option>
-												<option value="19">19</option>
-												<option value="20">20</option>
-												<option value="21">21</option>
-												<option value="22">22</option>
-												<option value="23">23</option>
-												<option value="24">24</option>
-												<option value="25">25</option>
-												<option value="26">26</option>
-												<option value="27">27</option>
-												<option value="28">28</option>
-												<option class="sel29" value="29">29</option>
-												<option class="sel30" value="30">30</option>
-												<option class="sel31" value="31">31</option>
 											</select>
-										</div>
-									</td>
-								</tr>
-							<?php endfor; ?>
-						</tbody>
-					</table>
-					<ul class="list-group" style="display:block;height:400px;overflow-y:auto;">
-						<?php
+										</td>
+										<td>
+											<select name="include[][day]" class="form-control bday">
+											<option></option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+											<option value="13">13</option>
+											<option value="14">14</option>
+											<option value="15">15</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20">20</option>
+											<option value="21">21</option>
+											<option value="22">22</option>
+											<option value="23">23</option>
+											<option value="24">24</option>
+											<option value="25">25</option>
+											<option value="26">26</option>
+											<option value="27">27</option>
+											<option value="28">28</option>
+											<option class="sel29" value="29">29</option>
+											<option class="sel30" value="30">30</option>
+											<option class="sel31" value="31">31</option>
+										</select>
+									
+								</td>
+							</tr>
+						<?php endfor; ?>
+					</tbody>
+				</table>
+				<ul class="list-group" style="display:block;height:400px;overflow-y:auto;">
+					<?php
 					//foreach ($calendar->VEVENT as $event) {
 						//$checked = !in_array($event->UID, $exclude) ?: ' checked="checked"';
 						//$name = str_replace('\'s Birthday', '', $event->SUMMARY);
 						//echo '<li class="list-group-item"><div class="checkbox"><label><input type="checkbox" name="include['.$bdate.']" value="'.$event->UID.'"'.$checked.'>' . $name .'</label></div></li>';
 					//}
-						?>
-					</ul>
-				</div>
+					?>
+				</ul>
 			</div>
-			<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
-		</form>
-	</div>
-	<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	$(document).ready(function() {
+		</div>
+		<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
+	</form>
+</div>
+<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function() {
 
-		$('.bmonth').on('change', function() {
-			var bday = $(this).closest('tr').find('.bday');
+	$('.bmonth').on('change', function() {
+		var bday = $(this).closest('tr').find('.bday');
 
-			switch( $(this).val() ) {
-				case '2':
-				bday.find('.sel30, .sel31').hide();
-				break;
-				case '4':
-				case '6':
-				case '9':
-				case '11':
-				bday.find('.sel30').show();
-				bday.find('.sel31').hide();
-				break;
-				default:
-				bday.find('.sel30, .sel31').show();
-			}
-		});
-
+		switch( $(this).val() ) {
+			case '2':
+			bday.find('.sel30, .sel31').hide();
+			break;
+			case '4':
+			case '6':
+			case '9':
+			case '11':
+			bday.find('.sel30').show();
+			bday.find('.sel31').hide();
+			break;
+			default:
+			bday.find('.sel30, .sel31').show();
+		}
 	});
-	</script>
+
+});
+</script>
 </body>
 </html>
