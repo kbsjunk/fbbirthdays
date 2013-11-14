@@ -3,54 +3,8 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "073d15e8ebbe2097a04d8f360a25667d",
+    "hash": "5f844208322259ba01a8bed1764ef94c",
     "packages": [
-        {
-            "name": "facebook/php-sdk",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/facebook/facebook-php-sdk.git",
-                "reference": "7ea7c6b48afa15fc65aa6e7e56d1ad0bfbc6dadd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/facebook/facebook-php-sdk/zipball/7ea7c6b48afa15fc65aa6e7e56d1ad0bfbc6dadd",
-                "reference": "7ea7c6b48afa15fc65aa6e7e56d1ad0bfbc6dadd",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=5.2.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "3.7.*"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache2"
-            ],
-            "authors": [
-                {
-                    "name": "Facebook",
-                    "homepage": "https://github.com/facebook/facebook-php-sdk/contributors"
-                }
-            ],
-            "description": "Facebook PHP SDK",
-            "homepage": "https://github.com/facebook/facebook-php-sdk",
-            "keywords": [
-                "facebook",
-                "sdk"
-            ],
-            "time": "2013-11-12 21:33:02"
-        },
         {
             "name": "sabre/vobject",
             "version": "dev-master",
@@ -113,8 +67,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "sabre/vobject": 20,
-        "facebook/php-sdk": 20
+        "sabre/vobject": 20
     },
     "platform": [
 
