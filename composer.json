@@ -1,6 +1,6 @@
 {
-    "name": "kitbs/fbbirthdays",
-    "description": "Facebook Birthday Calendar",
+    "name": "kitbs/fbbirthdayfilter",
+    "description": "Facebook Birthday Calendar Filter",
     "license": "MIT",
     "authors": [
         {
@@ -10,7 +10,6 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "sabre/vobject": "3.1.*@dev",
-        "facebook/php-sdk": "dev-master"
+        "sabre/vobject": "3.1.*@dev"
     }
 }
