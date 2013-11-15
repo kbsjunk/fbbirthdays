@@ -1,6 +1,12 @@
 <?php
 if (stripos($_SERVER['PHP_SELF'], 'functions.php') !== false ) { http_response_code(404); die(); }
 
+if (!file_exists('vendor/autoload.php')) {
+	http_response_code(500);
+	echo 'ERROR No vendor autoload file found. Run <code>composer install</code> first.';
+	die();
+}
+
 include 'vendor/autoload.php';
 use Sabre\VObject;
 
@@ -14,8 +20,16 @@ function saveconfig( $url = false, $exclude = false, $include = false, $rename =
 			\'', $include ).'\'';
 	}
 	if (is_array($rename)) {
-		$rename = '\''.implode( '\',
-			\'', $rename ).'\'';
+		foreach ($rename as $key => &$value) {
+			$value = '\''.$key.'\' => \''.$value.'\'';
+		}
+		$rename = implode( ',
+			', $rename );
+	}
+	
+
+	if ($url) {
+		$url = webcalToHttp($url);
 	}
 
 	$baseconfig = '<?php
@@ -62,4 +76,7 @@ function savefilteredcalendar($calendar, $config) {
 
 function justname($name) {
 	return str_replace('\'s Birthday', '', $name);
+}
+function webcalToHttp($url) {
+	return str_replace('webcal://', 'http://', $url);
 }

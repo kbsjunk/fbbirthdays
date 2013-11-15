@@ -28,20 +28,23 @@ if (isset($_POST['exclude'])) {
 }
 if (isset($_POST['rename']) && $url) {
 	$rename = array();
+	$renames = (array) $_POST['rename'];
 	$calendar = getcalendar($url);
 	foreach ($calendar->VEVENT as $event) {
-		if (isset($rename[$event->UID]) && $rename[$event->UID] != justname($event->SUMMARY)) {
-			
+		if (@$renames[(string)$event->UID] != justname($event->SUMMARY)) {
+			$rename[(string) $event->UID] = @$renames[(string)$event->UID];
 		}
-		
 	}
+	// $rename = array_diff_assoc($renames, $rename);
 // if (isset($_POST['include'])) {
 // 	foreach ($_POST['include'] as $newdate) {
 // 	$include[$]	
 // 	}
 // }
+}
+
 if (isset($_POST['saveevents'])) {
-	saveconfig($url, $exclude, $include);
+	saveconfig($url, $exclude, $include, $rename);
 	header( 'Location: '.$_SERVER['PHP_SELF'] );
 	die();
 }
@@ -102,17 +105,17 @@ if (isset($_POST['saveevents'])) {
 							foreach ($calendar->VEVENT as $event) {
 								$checked = !in_array($event->UID, $exclude) ?: ' checked="checked"';
 								$name = justname($event->SUMMARY);
-								$disabled = (isset($rename[$event->UID]) && $rename[$event->UID] != $name) ?: ' disabled'; 
+								$disabled = isset($rename[(string)$event->UID]) ?: ' disabled'; // && @$rename[(string)$event->UID] != $name
 
 								echo
 								'<li class="list-group-item">
 								<div class="input-group">
 								<span class="input-group-addon">
-									<input type="checkbox" name="exclude[]" value="'.$event->UID.'"'.$checked.'>
+								<input type="checkbox" name="exclude[]" value="'.$event->UID.'"'.$checked.'>
 								</span>
-								<input type="text" name="rename['.$event->UID.']" value="'.(isset($rename[$event->UID]) ? $rename[$event->UID] : $name).'" data-oldname="'.$name.'" class="form-control namebox" />
+								<input type="text" name="rename['.$event->UID.']" value="'.(isset($rename[(string)$event->UID]) ? $rename[(string)$event->UID] : $name).'" data-oldname="'.$name.'" class="form-control namebox" />
 								<span class="input-group-btn">
-									<button class="btn btn-default undorename" type="button"'.$disabled.'>Undo</button>
+								<button class="btn btn-default undorename" type="button"'.$disabled.'>Undo</button>
 								</span>
 								</div>
 								</li>';
@@ -151,24 +154,24 @@ if (isset($_POST['saveevents'])) {
 									<td><input type="text" name="include[<?php echo $i; ?>][name]" class="form-control" placeholder="Name" /></td>
 									<td>
 										
-											<select name="include[<?php echo $i; ?>][month]" class="form-control bmonth">
-												<option></option>
-												<option value="1">January</option>
-												<option value="2">February</option>
-												<option value="3">March</option>
-												<option value="4">April</option>
-												<option value="5">May</option>
-												<option value="6">June</option>
-												<option value="7">July</option>
-												<option value="8">August</option>
-												<option value="9">September</option>
-												<option value="10">October</option>
-												<option value="11">November</option>
-												<option value="12">December</option>
-											</select>
-										</td>
-										<td>
-											<select name="include[<?php echo $i; ?>][day]" class="form-control bday">
+										<select name="include[<?php echo $i; ?>][month]" class="form-control bmonth">
+											<option></option>
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+										</select>
+									</td>
+									<td>
+										<select name="include[<?php echo $i; ?>][day]" class="form-control bday">
 											<option></option>
 											<option value="1">1</option>
 											<option value="2">2</option>
@@ -202,59 +205,59 @@ if (isset($_POST['saveevents'])) {
 											<option class="sel30" value="30">30</option>
 											<option class="sel31" value="31">31</option>
 										</select>
-									
-								</td>
-							</tr>
-						<?php endfor; ?>
-					</tbody>
-				</table>
+
+									</td>
+								</tr>
+							<?php endfor; ?>
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-		<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
-	</form>
-</div>
-<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
-<script type="text/javascript">
-$(document).ready(function() {
+			<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
+		</form>
+	</div>
+	<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
 
-	$('.bmonth').on('change', function() {
-		var bday = $(this).closest('tr').find('.bday');
+		$('.bmonth').on('change', function() {
+			var bday = $(this).closest('tr').find('.bday');
 
-		switch( $(this).val() ) {
-			case '2':
-			bday.find('.sel30, .sel31').hide();
-			break;
-			case '4':
-			case '6':
-			case '9':
-			case '11':
-			bday.find('.sel30').show();
-			bday.find('.sel31').hide();
-			break;
-			default:
-			bday.find('.sel30, .sel31').show();
-		}
+			switch( $(this).val() ) {
+				case '2':
+				bday.find('.sel30, .sel31').hide();
+				break;
+				case '4':
+				case '6':
+				case '9':
+				case '11':
+				bday.find('.sel30').show();
+				bday.find('.sel31').hide();
+				break;
+				default:
+				bday.find('.sel30, .sel31').show();
+			}
+		});
+
+		$('.namebox').on('change', function() {
+			var namebutton = $(this).closest('li').find('.undorename');
+			if ($(this).val() != $(this).data('oldname')) {
+				namebutton.prop('disabled', false);
+			}
+			else {
+				namebutton.prop('disabled', true);
+			}
+
+		});
+
+		$('.undorename').on('click', function() {
+			var namebox = $(this).closest('li').find('.namebox');
+			namebox.val(namebox.data('oldname'));
+			$(this).prop('disabled', true);
+		});
+
 	});
-
-	$('.namebox').on('change', function() {
-		var namebutton = $(this).closest('li').find('.undorename');
-		if ($(this).val() != $(this).data('oldname')) {
-			namebutton.prop('disabled', false);
-		}
-		else {
-			namebutton.prop('disabled', true);
-		}
-		
-	});
-
-	$('.undorename').on('click', function() {
-		var namebox = $(this).closest('li').find('.namebox');
-		namebox.val(namebox.data('oldname'));
-		$(this).prop('disabled', true);
-	});
-
-});
-</script>
+	</script>
 </body>
 </html>
