@@ -4,7 +4,7 @@ if (stripos($_SERVER['PHP_SELF'], 'functions.php') !== false ) { http_response_c
 include 'vendor/autoload.php';
 use Sabre\VObject;
 
-function saveconfig( $url = false, $exclude = false, $include = false ) {
+function saveconfig( $url = false, $exclude = false, $include = false, $rename = false ) {
 	if (is_array($exclude)) {
 		$exclude = '\''.implode( '\',
 			\'', $exclude ).'\'';
@@ -13,11 +13,17 @@ function saveconfig( $url = false, $exclude = false, $include = false ) {
 		$include = '\''.implode( '\',
 			\'', $include ).'\'';
 	}
+	if (is_array($rename)) {
+		$rename = '\''.implode( '\',
+			\'', $rename ).'\'';
+	}
 
 	$baseconfig = '<?php
 	if (stripos($_SERVER[\'PHP_SELF\'], \'config.php\') !== false ) { http_response_code(404); die(); }
 
 	$url = \''.$url.'\';
+
+	$rename = array('.$rename.');
 
 	$include = array('.$include.');
 
@@ -52,4 +58,8 @@ function getfilteredcalendar($config) {
 function savefilteredcalendar($calendar, $config) {
 	$cache = 'cache/'.md5(serialize($config));
 	file_put_contents($cache, $calendar);
+}
+
+function justname($name) {
+	return str_replace('\'s Birthday', '', $name);
 }

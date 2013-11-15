@@ -18,6 +18,16 @@ else {
 
 	foreach($calendar->VEVENT as $event) {
 		if (!in_array($event->UID, $exclude)) {
+			
+			$event->remove('SUMMARY');
+			if (isset($rename[$event->UID])) {
+				$name = $rename[$event->UID];
+			}
+			else {
+				$name = justname($event->SUMMARY);
+			}
+			$event->SUMMARY = $name;
+			
 			$birthdays[] = $event;
 		}
 	}

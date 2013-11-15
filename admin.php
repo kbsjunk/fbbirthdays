@@ -4,6 +4,7 @@
 $url = false;
 $exclude = false;
 $include = false;
+$rename = false;
 $newconfig = false;
 
 // -------------------------------------------- //
@@ -25,6 +26,15 @@ if (isset($_POST['url'])) {
 if (isset($_POST['exclude'])) {
 	$exclude = $_POST['exclude'];
 }
+if (isset($_POST['rename']) && $url) {
+	$rename = array();
+	$calendar = getcalendar($url);
+	foreach ($calendar->VEVENT as $event) {
+		if (isset($rename[$event->UID]) && $rename[$event->UID] != justname($event->SUMMARY)) {
+			
+		}
+		
+	}
 // if (isset($_POST['include'])) {
 // 	foreach ($_POST['include'] as $newdate) {
 // 	$include[$]	
@@ -52,8 +62,8 @@ if (isset($_POST['saveevents'])) {
 		<h2>Facebook Birthday Calendar Filter</h2>
 		<ul class="nav nav-tabs">
 			<li class="active"><a href="#facebook-setup" data-toggle="tab">Facebook Setup</a></li>
-			<li><a href="#exclude-friends" data-toggle="tab">Exclude Friends</a></li>
-			<li><a href="#include-friends" data-toggle="tab">Include Friends</a></li>
+			<li><a href="#exclude-friends" data-toggle="tab">Facebook Friends</a></li>
+			<li><a href="#include-friends" data-toggle="tab">Non-Facebook Friends</a></li>
 		</ul>
 
 		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST" role="form" style="margin:20px 0;">
@@ -83,16 +93,29 @@ if (isset($_POST['saveevents'])) {
 
 					<div class="panel panel-default">
 						<!-- Default panel contents -->
-						<div class="panel-heading">Exclude Facebook Birthdays</div>
+						<div class="panel-heading">Facebook Birthdays</div>
 						<div class="panel-body">
-							<p>Select friends below to <strong>exclude</strong> them from your birthday calendar.</p>
+							<p>Check the box for friends below to <strong>exclude</strong> them from your birthday calendar, or change their Facebook name to something more meaningful.</p>
 						</div>	
 						<ul class="list-group" style="display:block;height:400px;overflow-y:auto;">
 							<?php
 							foreach ($calendar->VEVENT as $event) {
 								$checked = !in_array($event->UID, $exclude) ?: ' checked="checked"';
-								$name = str_replace('\'s Birthday', '', $event->SUMMARY);
-								echo '<li class="list-group-item"><div class="checkbox"><label><input type="checkbox" name="exclude[]" value="'.$event->UID.'"'.$checked.'>' . $name .'</label></div></li>';
+								$name = justname($event->SUMMARY);
+								$disabled = (isset($rename[$event->UID]) && $rename[$event->UID] != $name) ?: ' disabled'; 
+
+								echo
+								'<li class="list-group-item">
+								<div class="input-group">
+								<span class="input-group-addon">
+									<input type="checkbox" name="exclude[]" value="'.$event->UID.'"'.$checked.'>
+								</span>
+								<input type="text" name="rename['.$event->UID.']" value="'.(isset($rename[$event->UID]) ? $rename[$event->UID] : $name).'" data-oldname="'.$name.'" class="form-control namebox" />
+								<span class="input-group-btn">
+									<button class="btn btn-default undorename" type="button"'.$disabled.'>Undo</button>
+								</span>
+								</div>
+								</li>';
 							}
 							?>
 						</ul>
@@ -125,10 +148,10 @@ if (isset($_POST['saveevents'])) {
 							<tbody>
 								<?php for ($i=0; $i < 2; $i++): ?>
 								<tr>
-									<td><input type="text" name="include[][name]" class="form-control" placeholder="Name" /></td>
+									<td><input type="text" name="include[<?php echo $i; ?>][name]" class="form-control" placeholder="Name" /></td>
 									<td>
 										
-											<select name="include[][month]" class="form-control bmonth">
+											<select name="include[<?php echo $i; ?>][month]" class="form-control bmonth">
 												<option></option>
 												<option value="1">January</option>
 												<option value="2">February</option>
@@ -145,7 +168,7 @@ if (isset($_POST['saveevents'])) {
 											</select>
 										</td>
 										<td>
-											<select name="include[][day]" class="form-control bday">
+											<select name="include[<?php echo $i; ?>][day]" class="form-control bday">
 											<option></option>
 											<option value="1">1</option>
 											<option value="2">2</option>
@@ -185,15 +208,6 @@ if (isset($_POST['saveevents'])) {
 						<?php endfor; ?>
 					</tbody>
 				</table>
-				<ul class="list-group" style="display:block;height:400px;overflow-y:auto;">
-					<?php
-					//foreach ($calendar->VEVENT as $event) {
-						//$checked = !in_array($event->UID, $exclude) ?: ' checked="checked"';
-						//$name = str_replace('\'s Birthday', '', $event->SUMMARY);
-						//echo '<li class="list-group-item"><div class="checkbox"><label><input type="checkbox" name="include['.$bdate.']" value="'.$event->UID.'"'.$checked.'>' . $name .'</label></div></li>';
-					//}
-					?>
-				</ul>
 			</div>
 		</div>
 		<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
@@ -221,6 +235,23 @@ $(document).ready(function() {
 			default:
 			bday.find('.sel30, .sel31').show();
 		}
+	});
+
+	$('.namebox').on('change', function() {
+		var namebutton = $(this).closest('li').find('.undorename');
+		if ($(this).val() != $(this).data('oldname')) {
+			namebutton.prop('disabled', false);
+		}
+		else {
+			namebutton.prop('disabled', true);
+		}
+		
+	});
+
+	$('.undorename').on('click', function() {
+		var namebox = $(this).closest('li').find('.namebox');
+		namebox.val(namebox.data('oldname'));
+		$(this).prop('disabled', true);
 	});
 
 });
