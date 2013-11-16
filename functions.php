@@ -21,7 +21,7 @@ function saveconfig( $url = false, $exclude = false, $include = false, $rename =
 	}
 	if (is_array($rename)) {
 		foreach ($rename as $key => &$value) {
-			$value = '\''.$key.'\' => \''.$value.'\'';
+			$value = '\''.$key.'\' => \''.addslashes($value).'\'';
 		}
 		$rename = implode( ',
 			', $rename );

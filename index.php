@@ -9,7 +9,7 @@ if (!file_exists( 'config.php' )) {
 include 'config.php';
 include 'functions.php';
 
-if ($calendar = getfilteredcalendar(array('url'=>$url, 'exclude'=>$exclude, 'include'=>$include))) {
+if ($calendar = getfilteredcalendar(array('url'=>$url, 'exclude'=>$exclude, 'include'=>$include, 'rename'=>$rename))) {
 //NOTHING :-)
 }
 else {
@@ -19,12 +19,10 @@ else {
 	foreach($calendar->VEVENT as $event) {
 		if (!in_array($event->UID, $exclude)) {
 			
+			$name = justname((string)$event->SUMMARY);
 			$event->remove('SUMMARY');
-			if (isset($rename[$event->UID])) {
-				$name = $rename[$event->UID];
-			}
-			else {
-				$name = justname($event->SUMMARY);
+			if (isset($rename[(string)$event->UID])) {
+				$name = $rename[(string)$event->UID];
 			}
 			$event->SUMMARY = $name;
 			
@@ -34,10 +32,9 @@ else {
 
 	$calendar->remove('VEVENT');
 	$calendar->VEVENT = $birthdays;
-	//$calendar->VEVENT = array();//$birthdays;
 
 	$calendar = $calendar->serialize();
-	savefilteredcalendar($calendar, array('url'=>$url, 'exclude'=>$exclude, 'include'=>$include));
+	savefilteredcalendar($calendar, array('url'=>$url, 'exclude'=>$exclude, 'include'=>$include, 'rename'=>$rename));
 }
 http_response_code(200);
 header('Content-type: text/plain; charset=utf-8');
