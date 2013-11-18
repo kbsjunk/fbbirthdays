@@ -142,9 +142,9 @@ $fb = new \Kitbs\FbBirthdays();
 									<?php if (is_array($fb->config->include)) {
 										foreach ($fb->config->include as $i => $newdate) { ?>
 										<tr>
-											<td><?php $fb->includeName($i, $newdate->name); ?></td>
-											<td><?php $fb->monthPicker($i, $newdate->month); ?></td>
-											<td><?php $fb->dayPicker($i, $newdate->day, $newdate->month); ?></td>
+											<td><?php $fb->includeName($newdate->uid, $newdate->name); ?></td>
+											<td><?php $fb->monthPicker($newdate->uid, $newdate->month); ?></td>
+											<td><?php $fb->dayPicker($newdate->uid, $newdate->day, $newdate->month); ?></td>
 										</tr>
 										<?php }
 									} ?>

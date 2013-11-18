@@ -70,7 +70,7 @@ elseif ($fb->loadCalendar()) {
 			}
 
 			$fb->calendar->add('VEVENT', array(
-				'UID' => $uid.'@custom',
+				'UID' => $newdate->uid,
 				'SUMMARY' => $newdate->name.$leap,
 				'DTSTART' => $dt->format('Ymd'),
 				'RRULE' => 'FREQ=YEARLY',

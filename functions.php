@@ -96,33 +96,41 @@ class FbBirthdays {
 				$this->config->rename = $rename;
 			}
 
+			$include = array();
+
 			if (isset($_FILES['icsfile'])) {
 				$icsurl = @$_FILES['icsfile']["tmp_name"];
+
 				if ($this->loadIncludeCalendar($icsurl)) {
 
 					foreach ($this->includecalendar->VEVENT as $newdate) {
 						$name = $this->justName($newdate->SUMMARY);
 						$uid = md5($name);
-						$dt = $newdate->DTSTART->getDateTime();//->{'DTSTART,VALUE'};//->getDateTime();
+						$dt = $newdate->DTSTART->getDateTime();
 
-						$_POST['include'][$uid] = array(
-							'name' => $name,
-							'month' => $dt->format('m'),
-							'day' => $dt->format('d')
-							);
+						if (!isset($_POST['include'][$uid])) {
+							$include[$uid] = array(
+								'uid' => $uid,
+								'name' => $name,
+								'month' => $dt->format('m'),
+								'day' => $dt->format('d')
+								);
+						}
 					}
 				}
 			}
 
 			if (isset($_POST['include'])) {
-				$include = array();
 				foreach ($_POST['include'] as $newdate) {
 					if ($newdate['name']) {
-						$include[md5($newdate['name'])] = $newdate;
+						$newdate['uid'] = md5($newdate['name']);
+						$include[$newdate['uid']] = $newdate;
 					}
 				}
-				$this->config->include = $include;
 			}
+
+			usort($include, array($this, 'newDateSort'));	
+			$this->config->include = $include;
 
 			$this->config->save();
 			header( 'Location: '.$_SERVER['PHP_SELF'].'#!'.$this->thisTab() );
@@ -186,6 +194,16 @@ class FbBirthdays {
 		$cache = $this->getCacheFile(serialize($this->config));
 		file_put_contents($cache, $this->calendar->serialize());
 
+	}
+
+	public function newDateSort($a, $b) {
+		$amd = ($a['month'] * 100) + $a['day'];
+		$bmd = ($b['month'] * 100) + $b['day'];
+
+		if ($amd == $bmd) {
+			return 0;
+		}
+		return ($amd > $bmd) ? +1 : -1;
 	}
 
 	public function justName($name) {
