@@ -80,3 +80,27 @@ function justname($name) {
 function webcalToHttp($url) {
 	return str_replace('webcal://', 'http://', $url);
 }
+
+function monthPicker($id, $month = false) {
+	echo '<select name="include['. $id .'][month]" class="form-control bmonth">
+	<option></option>';
+	for ($i=1; $i <= 12; $i++) { 
+		$sel = $i === $month ? ' selected="selected"' : false;
+		echo '<option value="'. $i .'"'.$sel.'>'. $i .'</option>'.PHP_EOL;
+	}
+	echo '</select>';
+}
+function dayPicker($i, $day = false) {
+	echo '<select name="include['.$i.'][day]" class="form-control bday">
+	<option></option>';
+	for ($i=1; $i <= 31; $i++) { 
+		$sel = $i === $day ? ' selected="selected"' : false;
+		$cls = $i >= 29 ? ' class="sel'.$i.'"' : false;
+		echo '<option value="'. $i .'"'.$sel.$cls.'>'. $i .'</option>'.PHP_EOL;
+	}
+	
+	echo '</select>';
+}
+function includeName($i, $name = false) {
+	echo '<input type="text" name="include['.$i.'][name]" class="form-control" placeholder="Name" value="'.$name.'" />';
+}

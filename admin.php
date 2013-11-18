@@ -35,12 +35,14 @@ if (isset($_POST['rename']) && $url) {
 			$rename[(string) $event->UID] = @$renames[(string)$event->UID];
 		}
 	}
-	// $rename = array_diff_assoc($renames, $rename);
-// if (isset($_POST['include'])) {
-// 	foreach ($_POST['include'] as $newdate) {
-// 	$include[$]	
-// 	}
-// }
+}
+if (isset($_POST['include'])) {
+	$include = array();
+	foreach ($_POST['include'] as $newdate) {
+		if ($newdate['name']) {
+			$include[md5($newdate['name'])] = $newdate;
+		}
+	}
 }
 
 if (isset($_POST['saveevents'])) {
@@ -58,6 +60,10 @@ if (isset($_POST['saveevents'])) {
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
 	<style type="text/css">
 	.list-group-item .checkbox { margin:0; }
+	.greyed {
+		background-color: #EEEEEE;
+		color: #555555;
+	}
 	</style>
 </head>
 <body>
@@ -103,17 +109,22 @@ if (isset($_POST['saveevents'])) {
 						<ul class="list-group" style="display:block;height:400px;overflow-y:auto;">
 							<?php
 							foreach ($calendar->VEVENT as $event) {
-								$checked = !in_array($event->UID, $exclude) ?: ' checked="checked"';
+
+								$checked = !in_array((string)$event->UID, $exclude) ?: ' checked="checked"';
 								$name = justname($event->SUMMARY);
 								$disabled = isset($rename[(string)$event->UID]) ?: ' disabled'; // && @$rename[(string)$event->UID] != $name
+								$greyed = !in_array((string)$event->UID, $exclude) ?: ' greyed';
 
 								echo
 								'<li class="list-group-item">
 								<div class="input-group">
 								<span class="input-group-addon">
-								<input type="checkbox" name="exclude[]" value="'.$event->UID.'"'.$checked.'>
+								<input type="checkbox" name="exclude[]" class="excludeme" value="'.((string)$event->UID).'"'.$checked.'>
 								</span>
-								<input type="text" name="rename['.$event->UID.']" value="'.(isset($rename[(string)$event->UID]) ? $rename[(string)$event->UID] : $name).'" data-oldname="'.$name.'" class="form-control namebox" />
+								<input type="text" name="rename['.$event->UID.']"
+								value="'.(isset($rename[(string)$event->UID]) ? $rename[(string)$event->UID] : $name).'"
+								data-oldname="'.$name.'"
+								class="form-control namebox'.$greyed.'" />
 								<span class="input-group-btn">
 								<button class="btn btn-default undorename" type="button"'.$disabled.'>Undo</button>
 								</span>
@@ -149,115 +160,73 @@ if (isset($_POST['saveevents'])) {
 								</tr>
 							</thead>
 							<tbody>
-								<?php for ($i=0; $i < 2; $i++): ?>
+								<?php foreach ($include as $i => $newdate) { ?>
 								<tr>
-									<td><input type="text" name="include[<?php echo $i; ?>][name]" class="form-control" placeholder="Name" /></td>
-									<td>
-										
-										<select name="include[<?php echo $i; ?>][month]" class="form-control bmonth">
-											<option></option>
-											<option value="1">January</option>
-											<option value="2">February</option>
-											<option value="3">March</option>
-											<option value="4">April</option>
-											<option value="5">May</option>
-											<option value="6">June</option>
-											<option value="7">July</option>
-											<option value="8">August</option>
-											<option value="9">September</option>
-											<option value="10">October</option>
-											<option value="11">November</option>
-											<option value="12">December</option>
-										</select>
-									</td>
-									<td>
-										<select name="include[<?php echo $i; ?>][day]" class="form-control bday">
-											<option></option>
-											<option value="1">1</option>
-											<option value="2">2</option>
-											<option value="3">3</option>
-											<option value="4">4</option>
-											<option value="5">5</option>
-											<option value="6">6</option>
-											<option value="7">7</option>
-											<option value="8">8</option>
-											<option value="9">9</option>
-											<option value="10">10</option>
-											<option value="11">11</option>
-											<option value="12">12</option>
-											<option value="13">13</option>
-											<option value="14">14</option>
-											<option value="15">15</option>
-											<option value="16">16</option>
-											<option value="17">17</option>
-											<option value="18">18</option>
-											<option value="19">19</option>
-											<option value="20">20</option>
-											<option value="21">21</option>
-											<option value="22">22</option>
-											<option value="23">23</option>
-											<option value="24">24</option>
-											<option value="25">25</option>
-											<option value="26">26</option>
-											<option value="27">27</option>
-											<option value="28">28</option>
-											<option class="sel29" value="29">29</option>
-											<option class="sel30" value="30">30</option>
-											<option class="sel31" value="31">31</option>
-										</select>
-
-									</td>
+									<td><?php includeName($i, @$newdate['name']); ?></td>
+									<td><?php monthPicker($i, @$newdate['month']); ?></td>
+									<td><?php dayPicker($i, @$newdate['day']); ?></td>
 								</tr>
-							<?php endfor; ?>
-						</tbody>
-					</table>
+								<?php } ?>
+								<?php for ($i=0; $i < 2; $i++) { ?>
+								<tr>
+									<td><?php includeName($i); ?></td>
+									<td><?php monthPicker($i); ?></td>
+									<td><?php dayPicker($i); ?></td>
+								</tr>
+								<?php } ?>
+							</tbody>
+						</table>
+					</div>
 				</div>
-			</div>
-			<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
-		</form>
-	</div>
-	<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	$(document).ready(function() {
+				<input type="submit" name="saveevents" value="Save" class="btn btn-primary" />
+			</form>
+		</div>
+		<script src="//code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		$(document).ready(function() {
 
-		$('.bmonth').on('change', function() {
-			var bday = $(this).closest('tr').find('.bday');
+			$('.bmonth').on('change', function() {
+				var bday = $(this).closest('tr').find('.bday');
 
-			switch( $(this).val() ) {
-				case '2':
-				bday.find('.sel30, .sel31').hide();
-				break;
-				case '4':
-				case '6':
-				case '9':
-				case '11':
-				bday.find('.sel30').show();
-				bday.find('.sel31').hide();
-				break;
-				default:
-				bday.find('.sel30, .sel31').show();
-			}
+				switch( $(this).val() ) {
+					case '2':
+					bday.find('.sel30, .sel31').hide();
+					break;
+					case '4':
+					case '6':
+					case '9':
+					case '11':
+					bday.find('.sel30').show();
+					bday.find('.sel31').hide();
+					break;
+					default:
+					bday.find('.sel30, .sel31').show();
+				}
+			});
+
+			$('.namebox').on('change', function() {
+				var namebutton = $(this).closest('li').find('.undorename');
+				if ($(this).val() != $(this).data('oldname')) {
+					namebutton.prop('disabled', false);
+				}
+				else {
+					namebutton.prop('disabled', true);
+				}
+
+			});
+
+			$('.undorename').on('click', function() {
+				var namebox = $(this).closest('li').find('.namebox');
+				namebox.val(namebox.data('oldname'));
+				$(this).prop('disabled', true);
+			});
+
+			$('.excludeme').on('change', function() {
+				$(this).closest('li').find('.namebox').toggleClass('greyed', $(this).prop('checked'));
+			});
+
 		});
-
-		$('.namebox').on('change', function() {
-			var namebutton = $(this).closest('li').find('.undorename');
-			if ($(this).val() != $(this).data('oldname')) {
-				namebutton.prop('disabled', false);
-			}
-			else {
-				namebutton.prop('disabled', true);
-			}
-
-		});
-
-		$('.undorename').on('click', function() {
-			var namebox = $(this).closest('li').find('.namebox');
-			namebox.val(namebox.data('oldname'));
-			$(this).prop('disabled', true);
-		});
-
-	});
-	</script>
+</script>
 </body>
 </html>
