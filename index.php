@@ -84,8 +84,9 @@ elseif ($fb->loadCalendar()) {
 	$calendar = $fb->calendar->serialize();
 }
 else {
-	//http_response_code(500);
-	//die();
+	http_response_code(500);
+	echo 'ERROR Could not load Facebook calendar. Go to <a href="admin.php">Admin</a> to reconfigure.';
+	die();
 }
 http_response_code(200);
 header('Content-type: text/plain; charset=utf-8');
