@@ -1,5 +1,5 @@
-# Order deny,allow
-# Deny from all
+Order deny,allow
+Deny from all
 
 <FilesMatch "(admin|index|calendar)\.php$">
     Allow from all
