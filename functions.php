@@ -61,6 +61,7 @@ class FbBirthdays {
 	public $config;
 	public $calendar;
 	public $includecalendar;
+	private $cacheLength = 876400; // 1 Day
 
 	public function __construct() {
 		$this->config = new \Kitbs\Config();
@@ -154,7 +155,7 @@ class FbBirthdays {
 
 			$cache = $this->getCacheFile($this->config->url);
 
-			if (file_exists($cache)) {
+			if (file_exists($cache) && (time() - filemtime($cache)) < $this->cacheLength) {
 				$data = file_get_contents($cache);
 			}
 			else {
@@ -184,7 +185,7 @@ class FbBirthdays {
 
 		$cache = $this->getCacheFile(serialize($this->config));
 
-		if (file_exists($cache)) {
+		if (file_exists($cache) && (time() - filemtime($cache)) < $this->cacheLength) {
 			return file_get_contents($cache);
 		}
 
