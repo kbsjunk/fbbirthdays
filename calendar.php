@@ -34,10 +34,16 @@ elseif ($fb->loadCalendar()) {
 	$fb->calendar->remove('VEVENT');
 	
 	foreach ($birthdays as $newdate) {
+
+		$dtstart = $newdate->DTSTART;
+		if ($newdate->DTSTART->getDateTime()->format('Y') > date('Y')) { // Add birthdays from earlier in the year
+			$dtstart = $newdate->DTSTART->getDateTime()->sub(new DateInterval('P1Y'))->format('Ymd');
+		} 
+
 		$fb->calendar->add('VEVENT',  array(
 			'UID' => $newdate->UID,
 			'SUMMARY' =>  $newdate->SUMMARY,
-			'DTSTART' =>  $newdate->DTSTART,
+			'DTSTART' =>  $dtstart,
 			'RRULE' =>  $newdate->RRULE,
 			'DURATION' =>  $newdate->DURATION,
 			));
@@ -65,9 +71,6 @@ elseif ($fb->loadCalendar()) {
 		}
 
 		if (!$error) {
-			if ($dt < $now) {
-				$dt->add(new DateInterval('P1Y'));
-			}
 
 			$fb->calendar->add('VEVENT', array(
 				'UID' => $newdate->uid,
@@ -77,6 +80,19 @@ elseif ($fb->loadCalendar()) {
 				'DURATION' => 'P1D'
 				)
 			);
+
+			// if ($dt < $now) { // Include birthdays from earlier in the year in next year
+			// 	$dt->add(new DateInterval('P1Y'));
+			// 	$fb->calendar->add('VEVENT', array(
+			// 		'UID' => md5($newdate->uid),
+			// 		'SUMMARY' => $newdate->name.$leap,
+			// 		'DTSTART' => $dt->format('Ymd'),
+			// 		'RRULE' => 'FREQ=YEARLY',
+			// 		'DURATION' => 'P1D'
+			// 		)
+			// 	);
+			// }
+
 		}
 	}
 
